@@ -105,7 +105,7 @@ const sections = [
 ];
 
 const stats = [
-  { value: "38+", label: "Tópicos" },
+  { value: "100+", label: "Tópicos" },
   { value: "100+", label: "Exemplos .rpy" },
   { value: "PT-BR", label: "Em Português" },
   { value: "Open", label: "Source · MIT" },
