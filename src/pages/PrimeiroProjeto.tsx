@@ -7,6 +7,8 @@ import { PracticeBox } from "@/components/ui/PracticeBox";
 import { Terminal } from "@/components/ui/Terminal";
 
 export default function PrimeiroProjeto() {
+  console.log("🔵 PrimeiroProjeto: componente carregando");
+  
   return (
     <PageContainer
       title="Seu primeiro projeto — 'Olá, Sakura!'"

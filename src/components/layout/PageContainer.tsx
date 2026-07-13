@@ -13,6 +13,8 @@ interface PageContainerProps {
 export function PageContainer({ title, subtitle, difficulty, timeToRead, children }: PageContainerProps) {
   const [scrollProgress, setScrollProgress] = useState(0);
 
+  console.log("🔵 PageContainer render:", title);
+
   useEffect(() => {
     const handleScroll = () => {
       const totalScroll = document.documentElement.scrollTop;
@@ -26,8 +28,14 @@ export function PageContainer({ title, subtitle, difficulty, timeToRead, childre
 
   return (
     <div className="max-w-4xl mx-auto py-10 px-4 sm:px-6 lg:px-8 pb-32 min-h-[60vh]">
+      {/* DEBUG BANNER */}
+      <div className="fixed top-0 left-0 right-0 bg-yellow-500 text-black text-xs font-mono p-2 z-[100] flex justify-between items-center">
+        <span>🔍 DEBUG: PageContainer renderizando "{title}"</span>
+        <span className="opacity-60">{new Date().toISOString()}</span>
+      </div>
+
       <div
-        className="fixed top-0 left-0 h-1 bg-gradient-to-r from-rose-500 to-pink-500 z-50 transition-all duration-150"
+        className="fixed top-8 left-0 h-1 bg-gradient-to-r from-rose-500 to-pink-500 z-50 transition-all duration-150"
         style={{ width: `${scrollProgress * 100}%` }}
       />
 
