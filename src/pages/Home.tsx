@@ -1,234 +1,222 @@
+import { useEffect, useState } from "react";
 import { Link } from "wouter";
-import {
-  Sparkles,
-  Heart,
-  ChevronRight,
-  Wand2,
-  Star,
-  Flower2,
-  Code,
-  Image as ImageIcon,
-  Music,
-  MousePointerClick,
-  Palette,
-  Languages,
-  Server,
-  Gamepad2,
-  BookOpen,
-} from "lucide-react";
+import { ChevronRight, Heart, Code } from "lucide-react";
+import { motion } from "framer-motion";
+import { COURSE_MODULES, getCompletionStats, type Module } from "@/lib/course";
 
-const sections = [
-  {
-    icon: Wand2,
-    title: "Comece Aqui (do zero)",
-    desc: "Você nunca programou uma cena? Comece por aqui. Sem nenhum pré-requisito.",
-    href: "/comece-aqui",
-    color: "bg-primary/10 text-primary",
-  },
-  {
-    icon: Star,
-    title: "Primeiro Projeto",
-    desc: "Crie seu primeiro VN no Launcher e veja a primeira fala aparecer.",
-    href: "/primeiro-projeto",
-    color: "bg-pink-500/10 text-pink-500",
-  },
-  {
-    icon: Code,
-    title: "Sintaxe .rpy",
-    desc: "Labels, jumps, scenes e show — a anatomia de um script Ren'Py.",
-    href: "/sintaxe-basica",
-    color: "bg-violet-500/10 text-violet-500",
-  },
-  {
-    icon: ImageIcon,
-    title: "Sprites & Cenas",
-    desc: "Personagens, expressões, backgrounds, transições e ATL.",
-    href: "/imagens",
-    color: "bg-fuchsia-500/10 text-fuchsia-500",
-  },
-  {
-    icon: Music,
-    title: "Música & Voice",
-    desc: "Trilha sonora, efeitos e dublagem por linha de diálogo.",
-    href: "/audio",
-    color: "bg-purple-500/10 text-purple-500",
-  },
-  {
-    icon: MousePointerClick,
-    title: "Menus & Escolhas",
-    desc: "Crie rotas, finais múltiplos e pontos de afeição (route system).",
-    href: "/menus",
-    color: "bg-rose-500/10 text-rose-500",
-  },
-  {
-    icon: Palette,
-    title: "GUI & Screens",
-    desc: "Customize o textbox, cores, fontes e crie telas de inventário.",
-    href: "/gui",
-    color: "bg-pink-400/10 text-pink-400",
-  },
-  {
-    icon: Languages,
-    title: "Tradução (i18n)",
-    desc: "Lance sua VN em múltiplos idiomas com `renpy.translate`.",
-    href: "/i18n",
-    color: "bg-indigo-500/10 text-indigo-500",
-  },
-  {
-    icon: Server,
-    title: "Build & Distribuição",
-    desc: "Empacote para PC, Mac, Linux, Web e Android — sem sofrer.",
-    href: "/build",
-    color: "bg-purple-400/10 text-purple-400",
-  },
-  {
-    icon: Gamepad2,
-    title: "Mini-games",
-    desc: "Use Screens + Python para mini-puzzles dentro da VN.",
-    href: "/minigames",
-    color: "bg-pink-300/10 text-pink-300",
-  },
-  {
-    icon: Heart,
-    title: "Sistema de Afeição",
-    desc: "Variáveis, flags e finais condicionais por personagem.",
-    href: "/afeicao",
-    color: "bg-rose-400/10 text-rose-400",
-  },
-  {
-    icon: Flower2,
-    title: "Projeto Final: Sakura Café",
-    desc: "Uma VN completa rodável com sprites, música, escolhas e 3 finais.",
-    href: "/projeto-final",
-    color: "bg-fuchsia-400/10 text-fuchsia-400",
-  },
-];
+// LiveTerminal - Ren'Py style
+function LiveTerminal() {
+  const lines = [
+    { text: "# Ren'Py - Visual Novel Engine", delay: 0 },
+    { text: "", delay: 400 },
+    { text: "define s = Character('Sakura', color='#ff69b4')", delay: 800 },
+    { text: "", delay: 1200 },
+    { text: "label start:", delay: 1600 },
+    { text: "    scene bg school", delay: 2000 },
+    { text: "    with fade", delay: 2400 },
+    { text: "", delay: 2800 },
+    { text: "    show sakura happy", delay: 3200 },
+    { text: "    s \"Bem-vindo ao Ren'Py!\"", delay: 3600 },
+    { text: "", delay: 4000 },
+    { text: "    s \"Vamos criar sua visual novel together.\"", delay: 4400 },
+    { text: "", delay: 4800 },
+    { text: "    menu:", delay: 5200 },
+    { text: "        \"Começar agora\":", delay: 5600 },
+    { text: "            jump tutorial", delay: 6000 },
+    { text: "        \"Ver exemplos\":", delay: 6400 },
+    { text: "            jump exemplos", delay: 6800 },
+  ];
 
-const stats = [
-  { value: "100+", label: "Tópicos" },
-  { value: "100+", label: "Exemplos .rpy" },
-  { value: "PT-BR", label: "Em Português" },
-  { value: "Open", label: "Source · MIT" },
-];
+  const [visibleLines, setVisibleLines] = useState<number>(0);
+  const [showCursor, setShowCursor] = useState(true);
+
+  useEffect(() => {
+    const timers: NodeJS.Timeout[] = [];
+    lines.forEach((_, i) => {
+      const timer = setTimeout(() => {
+        setVisibleLines(i + 1);
+      }, lines[i].delay + 100);
+      timers.push(timer);
+    });
+    return () => timers.forEach(clearTimeout);
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => setShowCursor((c) => !c), 530);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="bg-[#1a0a14] rounded-2xl border border-rose-500/30 overflow-hidden shadow-2xl shadow-rose-500/10">
+      <div className="flex items-center gap-2 px-4 py-3 bg-[#0d0508] border-b border-rose-500/20">
+        <div className="flex gap-1.5">
+          <div className="w-3 h-3 rounded-full bg-red-500/80" />
+          <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
+          <div className="w-3 h-3 rounded-full bg-green-500/80" />
+        </div>
+        <span className="text-xs text-rose-300/70 ml-2 font-mono">script.rpy — Ren'Py</span>
+      </div>
+      <div className="p-5 font-mono text-sm leading-[1.8] h-[400px] overflow-hidden">
+        {lines.slice(0, visibleLines).map((line, i) => (
+          <div key={i} className="flex">
+            <span className={line.text.startsWith("#") ? "text-gray-500" : line.text.startsWith("define") || line.text.startsWith("label") || line.text.startsWith("    menu") ? "text-rose-400" : line.text.includes('\"') ? "text-emerald-400" : line.text.startsWith("    show") || line.text.startsWith("    scene") ? "text-cyan-400" : "text-gray-400"}>
+              {line.text || "\u00A0"}
+            </span>
+          </div>
+        ))}
+        {showCursor && visibleLines === lines.length && (
+          <span className="text-rose-400">▌</span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Module Card
+function ModuleCard({ module, index }: { module: Module; index: number }) {
+  const lessonCount = module.lessons.length;
+
+  return (
+    <Link href={module.lessons[0]?.path || "/"}>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: index * 0.03 }}
+        whileHover={{ y: -4, scale: 1.02 }}
+        className="group p-5 rounded-2xl bg-card border border-border hover:border-rose-500/50 hover:shadow-lg hover:shadow-rose-500/10 transition-all cursor-pointer h-full flex flex-col items-center text-center"
+      >
+        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-rose-500/20 to-pink-500/20 flex items-center justify-center text-3xl mb-4 group-hover:scale-110 transition-transform">
+          {module.emoji}
+        </div>
+        <h3 className="font-bold text-foreground text-base mb-2 group-hover:text-rose-500 transition-colors">
+          {module.title}
+        </h3>
+        <p className="text-xs text-muted-foreground mb-3">
+          {lessonCount} {lessonCount === 1 ? "lição" : "lições"}
+        </p>
+        <div className="mt-auto flex items-center gap-1 text-xs text-rose-500 font-medium group-hover:gap-2 transition-all">
+          <span>Ver lições</span>
+          <ChevronRight className="w-4 h-4" />
+        </div>
+      </motion.div>
+    </Link>
+  );
+}
 
 export default function Home() {
-  return (
-    <div className="max-w-5xl mx-auto py-8 px-4 sm:px-6 lg:px-8 pb-24">
-      {/* Hero */}
-      <div className="text-center mb-16 mt-4">
-        <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-medium mb-6">
-          <Flower2 className="w-4 h-4" />
-          Guia Completo em Português · Visual Novel · Ren'Py 8.x
-        </div>
-        <h1 className="text-5xl sm:text-6xl font-extrabold tracking-tight text-foreground mb-6 leading-tight">
-          Crie Visual Novels{" "}
-          <span className="text-primary">do Zero Absoluto</span>
-        </h1>
-        <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-          Da primeira fala da heroína ao APK na Play Store. Aprenda Ren'Py com{" "}
-          <strong className="text-foreground">exemplos práticos</strong> em ordem
-          cronológica — você cria o sprite antes de aprender a animá-lo.
-        </p>
+  const stats = getCompletionStats();
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-12 max-w-2xl mx-auto">
-          {stats.map((stat, i) => (
-            <div
-              key={i}
-              className="bg-card border border-border rounded-xl p-4 text-center"
+  return (
+    <div className="min-h-screen pb-20">
+      {/* Hero */}
+      <section className="relative overflow-hidden pt-16 pb-20 px-4">
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <div className="absolute inset-0 bg-gradient-to-br from-rose-500/5 via-transparent to-pink-500/5" />
+          <div className="absolute top-20 left-1/4 w-96 h-96 bg-rose-500/10 rounded-full blur-3xl" />
+          <div className="absolute bottom-20 right-1/4 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl" />
+        </div>
+
+        <div className="max-w-6xl mx-auto relative z-10">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left: Text */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="text-center lg:text-left"
             >
-              <div className="text-3xl font-extrabold text-primary">
-                {stat.value}
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20 text-xs font-medium mb-6">
+                <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+                Livro Completo 2025 — {stats.total} Lições
               </div>
-              <div className="text-xs text-muted-foreground mt-1">
-                {stat.label}
+
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight mb-6 leading-tight">
+                <span className="text-foreground">Domine o</span>
+                <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-500 to-pink-500">
+                  Ren'Py
+                </span>
+              </h1>
+
+              <p className="text-muted-foreground mb-8 max-w-md leading-relaxed mx-auto lg:mx-0">
+                Crie visual novels incríveis. Do básico ao avançado: roteiro interativo, GUI customizada, animações, Live2D, multiplataforma.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                <Link
+                  href="/ComeceAqui"
+                  className="px-8 py-4 rounded-xl bg-gradient-to-r from-rose-600 to-pink-600 text-white font-semibold shadow-lg shadow-rose-500/30 hover:shadow-xl hover:shadow-rose-500/40 hover:-translate-y-0.5 transition-all text-center"
+                >
+                  Começar Agora
+                </Link>
+                <Link
+                  href="/PrimeiroProjeto"
+                  className="px-8 py-4 rounded-xl bg-card border border-border text-foreground font-semibold hover:bg-muted hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2"
+                >
+                  <Code className="w-4 h-4" />
+                  Primeiro Projeto
+                </Link>
               </div>
+            </motion.div>
+
+            {/* Right: Terminal */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
+              <LiveTerminal />
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats */}
+      <section className="border-y border-border bg-card/50">
+        <div className="max-w-6xl mx-auto px-4 py-10">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <div>
+              <div className="text-4xl font-black text-rose-500 mb-1">{stats.total}</div>
+              <div className="text-xs text-muted-foreground uppercase tracking-wider">Lições</div>
             </div>
+            <div>
+              <div className="text-4xl font-black text-pink-500 mb-1">{COURSE_MODULES.length}</div>
+              <div className="text-xs text-muted-foreground uppercase tracking-wider">Módulos</div>
+            </div>
+            <div>
+              <div className="text-4xl font-black text-emerald-500 mb-1">{stats.completed}</div>
+              <div className="text-xs text-muted-foreground uppercase tracking-wider">Concluídas</div>
+            </div>
+            <div>
+              <div className="text-4xl font-black text-rose-400 mb-1">{stats.percentage}%</div>
+              <div className="text-xs text-muted-foreground uppercase tracking-wider">Progresso</div>
+            </div>
+          </div>
+
+          <div className="mt-8 max-w-md mx-auto">
+            <div className="h-2.5 bg-muted rounded-full overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-rose-500 to-pink-500 rounded-full transition-all duration-700"
+                style={{ width: `${stats.percentage}%` }}
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Modules Grid */}
+      <section className="py-16 px-4 max-w-6xl mx-auto">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold mb-3">Explore os Módulos</h2>
+          <p className="text-muted-foreground">Do básico ao avançado</p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {COURSE_MODULES.map((module, i) => (
+            <ModuleCard key={module.id} module={module} index={i} />
           ))}
         </div>
-      </div>
-
-      {/* Cartão de boas-vindas / Welcome */}
-      <div className="mb-12 rounded-2xl border-2 border-primary/30 bg-gradient-to-br from-primary/10 via-pink-500/5 to-accent/10 overflow-hidden">
-        <div className="flex items-center gap-2 px-5 py-3 bg-primary/15 border-b border-primary/20">
-          <Sparkles className="w-5 h-5 text-primary" />
-          <span className="text-sm font-bold uppercase tracking-wider text-primary">
-            O que é uma Visual Novel?
-          </span>
-        </div>
-        <div className="p-6 space-y-3">
-          <p className="text-sm text-foreground/90 leading-relaxed m-0">
-            Uma <strong>Visual Novel (VN)</strong> é um jogo narrativo onde a
-            história é o protagonista: você lê diálogos, vê os sprites dos
-            personagens reagirem, ouve a trilha sonora e, em pontos chave,{" "}
-            <strong>escolhe</strong> o caminho que a história vai seguir. Ren'Py
-            é o motor open-source mais usado no mundo para criar VNs — feito em
-            Python, gratuito, multiplataforma e gigante na cena indie japonesa,
-            ocidental e LGBTQIA+.
-          </p>
-          <p className="text-sm text-foreground/90 leading-relaxed m-0">
-            Este guia te leva da <strong>instalação do SDK</strong> até{" "}
-            <strong>publicar uma VN completa</strong> — chamada{" "}
-            <em>Sakura Café</em> — com sprites, música, sistema de afeição,
-            múltiplos finais, GUI customizada e build para web/Android.
-          </p>
-        </div>
-      </div>
-
-      {/* Trilha */}
-      <div className="mb-12">
-        <h2 className="text-2xl font-bold mb-8 text-center">
-          Sua trilha de aprendizado
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {sections.map((s, i) => {
-            const Icon = s.icon;
-            return (
-              <Link href={s.href} key={i}>
-                <div className="group bg-card border border-border rounded-xl p-5 hover:border-primary/40 hover:shadow-lg transition-all duration-200 cursor-pointer h-full">
-                  <div
-                    className={`w-10 h-10 rounded-lg ${s.color} flex items-center justify-center mb-4`}
-                  >
-                    <Icon className="w-5 h-5" />
-                  </div>
-                  <h3 className="font-bold text-foreground mb-1 text-sm mt-0 border-0">
-                    {s.title}
-                  </h3>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    {s.desc}
-                  </p>
-                  <div className="flex items-center gap-1 mt-3 text-primary text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-                    Explorar <ChevronRight className="w-3 h-3" />
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* CTA */}
-      <div className="bg-card border border-border rounded-2xl p-8 text-center">
-        <h2 className="text-2xl font-bold mb-3 mt-0 border-0">
-          Pronto para começar?
-        </h2>
-        <p className="text-muted-foreground mb-6">
-          Mesmo se você nunca abriu um editor de código na vida, a primeira
-          página foi feita para você.
-        </p>
-        <div className="flex flex-wrap items-center justify-center gap-3">
-          <Link href="/comece-aqui">
-            <button className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-xl font-semibold hover:opacity-90 transition-opacity">
-              Começar do zero <ChevronRight className="w-4 h-4" />
-            </button>
-          </Link>
-          <Link href="/projeto-final">
-            <button className="inline-flex items-center gap-2 px-6 py-3 bg-card border border-border rounded-xl font-semibold hover:border-primary/40 transition-colors">
-              <BookOpen className="w-4 h-4 text-primary" />
-              Ver o projeto final (Sakura Café)
-            </button>
-          </Link>
-        </div>
-      </div>
+      </section>
     </div>
   );
 }

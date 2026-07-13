@@ -297,6 +297,63 @@
       transparent 0,
       transparent 2px,
       hsl(0 0% 0% / 0.06) 3px,
+
+/* Prose Typography - Ren'Py Theme */
+.prose h2 {
+  @apply text-2xl font-bold mt-10 mb-4 text-foreground border-b border-border/50 pb-2;
+}
+
+.prose h3 {
+  @apply text-xl font-semibold mt-8 mb-3 text-foreground;
+}
+
+.prose p {
+  @apply my-4 leading-relaxed;
+}
+
+.prose ol, .prose ul {
+  @apply my-6 space-y-3;
+}
+
+.prose li {
+  @apply leading-relaxed;
+}
+
+.prose ol > li {
+  @apply list-decimal ml-6 pl-2;
+}
+
+.prose ul > li {
+  @apply list-disc ml-6 pl-2;
+}
+
+.prose ol > li::marker {
+  @apply text-rose-500 font-semibold;
+}
+
+.prose ul > li::marker {
+  @apply text-rose-500;
+}
+
+.prose code {
+  @apply px-2 py-1 rounded bg-muted text-rose-500 font-mono text-sm font-medium;
+}
+
+.prose pre {
+  @apply my-6;
+}
+
+.prose a {
+  @apply text-rose-500 hover:text-rose-400 underline underline-offset-2 transition-colors;
+}
+
+.prose strong {
+  @apply text-foreground font-semibold;
+}
+
+.prose hr {
+  @apply my-8 border-border;
+}
       transparent 4px
     );
     border-radius: inherit;

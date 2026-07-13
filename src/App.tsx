@@ -5,6 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
+import { LessonNav } from "@/components/ui/LessonNav";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 import Home from "@/pages/Home";
 import AvisoLegal from "@/pages/AvisoLegal";
@@ -137,8 +139,9 @@ function Layout({ children }: { children: React.ReactNode }) {
       <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
       <div className="flex-1 lg:pl-72 flex flex-col min-w-0 transition-all duration-300">
         <Header onMenuClick={() => setIsSidebarOpen(true)} />
-        <main className="flex-1">{children}</main>
+        <main className="flex-1 pb-16 min-h-screen">{children}</main>
       </div>
+      <LessonNav />
     </div>
   );
 }
@@ -146,7 +149,8 @@ function Layout({ children }: { children: React.ReactNode }) {
 function Router() {
   return (
     <Layout>
-      <Switch>
+      <ErrorBoundary>
+        <Switch>
         <Route path="/" component={Home} />
         <Route path="/aviso-legal" component={AvisoLegal} />
         <Route path="/comece-aqui" component={ComeceAqui} />
@@ -261,7 +265,8 @@ function Router() {
         <Route path="/referencias" component={Referencias} />
 
         <Route component={NotFound} />
-      </Switch>
+        </Switch>
+      </ErrorBoundary>
     </Layout>
   );
 }
