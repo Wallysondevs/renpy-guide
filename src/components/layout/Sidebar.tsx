@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Link } from "wouter";
 import { useHashLocation } from "wouter/use-hash-location";
 import { cn } from "@/lib/utils";
 import { Heart, X, ChevronDown, ChevronRight, Check, BookOpen } from "lucide-react";
@@ -15,6 +14,10 @@ function ModuleSection({ module }: { module: Module }) {
   const completedCount = module.lessons.filter((l) => progress[l.id]).length;
   const isComplete = completedCount === module.lessons.length;
   const hasActiveChild = module.lessons.some((l) => l.path === location);
+
+  const navigate = (path: string) => {
+    window.location.hash = path;
+  };
 
   return (
     <div className="mb-1">
@@ -46,24 +49,24 @@ function ModuleSection({ module }: { module: Module }) {
             const active = location === lesson.path;
             const done = progress[lesson.id];
             return (
-              <Link key={lesson.id} href={lesson.path}>
-                <div
-                  className={cn(
-                    "flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm cursor-pointer transition-all",
-                    active
-                      ? "bg-rose-500/15 text-rose-600 dark:text-rose-400 font-semibold"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted",
-                    done && !active && "text-emerald-600 dark:text-emerald-400"
-                  )}
-                >
-                  {done ? (
-                    <Check className="w-4 h-4 shrink-0 text-emerald-500" />
-                  ) : (
-                    <div className="w-4 h-4 shrink-0 rounded-full border border-muted-foreground/30" />
-                  )}
-                  <span className="truncate">{lesson.title}</span>
-                </div>
-              </Link>
+              <div
+                key={lesson.id}
+                onClick={() => navigate(lesson.path)}
+                className={cn(
+                  "flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm cursor-pointer transition-all",
+                  active
+                    ? "bg-rose-500/15 text-rose-600 dark:text-rose-400 font-semibold"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted",
+                  done && !active && "text-emerald-600 dark:text-emerald-400"
+                )}
+              >
+                {done ? (
+                  <Check className="w-4 h-4 shrink-0 text-emerald-500" />
+                ) : (
+                  <div className="w-4 h-4 shrink-0 rounded-full border border-muted-foreground/30" />
+                )}
+                <span className="truncate">{lesson.title}</span>
+              </div>
             );
           })}
         </div>
@@ -79,6 +82,10 @@ interface SidebarProps {
 
 export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
   const stats = getCompletionStats();
+
+  const navigate = (path: string) => {
+    window.location.hash = path;
+  };
 
   return (
     <>
@@ -96,7 +103,7 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
         )}
       >
         <div className="flex items-center justify-between px-4 h-16 border-b border-border shrink-0">
-          <Link href="/" className="flex items-center gap-3">
+          <div onClick={() => navigate("/")} className="flex items-center gap-3 cursor-pointer">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center">
               <Heart className="w-5 h-5 text-white" />
             </div>
@@ -104,7 +111,7 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
               <div className="font-bold text-sm leading-tight">Ren'Py Guide</div>
               <div className="text-[10px] text-muted-foreground font-normal">Livro Completo</div>
             </div>
-          </Link>
+          </div>
           <button
             onClick={() => setIsOpen(false)}
             className="lg:hidden p-2 rounded-lg hover:bg-muted"
@@ -130,17 +137,16 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
         </div>
 
         <div className="flex-1 overflow-y-auto py-4 px-3">
-          <Link href="/">
-            <div
-              className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold mb-3",
-                "text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
-              )}
-            >
-              <BookOpen className="w-4 h-4 text-rose-500" />
-              Início
-            </div>
-          </Link>
+          <div
+            onClick={() => navigate("/")}
+            className={cn(
+              "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold mb-3 cursor-pointer",
+              "text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+            )}
+          >
+            <BookOpen className="w-4 h-4 text-rose-500" />
+            Início
+          </div>
           {COURSE_MODULES.map((module) => (
             <ModuleSection key={module.id} module={module} />
           ))}

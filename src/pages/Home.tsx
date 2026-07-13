@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Link } from "wouter";
 import { ChevronRight, Heart, Code } from "lucide-react";
 import { motion } from "framer-motion";
 import { COURSE_MODULES, getCompletionStats, type Module } from "@/lib/course";
@@ -76,8 +75,12 @@ function LiveTerminal() {
 function ModuleCard({ module, index }: { module: Module; index: number }) {
   const lessonCount = module.lessons.length;
 
+  const navigate = (path: string) => {
+    window.location.hash = path;
+  };
+
   return (
-    <Link href={module.lessons[0]?.path || "/"}>
+    <div onClick={() => navigate(module.lessons[0]?.path || "/")}>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -99,7 +102,7 @@ function ModuleCard({ module, index }: { module: Module; index: number }) {
           <ChevronRight className="w-4 h-4" />
         </div>
       </motion.div>
-    </Link>
+    </div>
   );
 }
 
@@ -143,19 +146,19 @@ export default function Home() {
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <Link
-                  href="/ComeceAqui"
+                <button
+                  onClick={() => window.location.hash = '/ComeceAqui'}
                   className="px-8 py-4 rounded-xl bg-gradient-to-r from-rose-600 to-pink-600 text-white font-semibold shadow-lg shadow-rose-500/30 hover:shadow-xl hover:shadow-rose-500/40 hover:-translate-y-0.5 transition-all text-center"
                 >
                   Começar Agora
-                </Link>
-                <Link
-                  href="/PrimeiroProjeto"
+                </button>
+                <button
+                  onClick={() => window.location.hash = '/PrimeiroProjeto'}
                   className="px-8 py-4 rounded-xl bg-card border border-border text-foreground font-semibold hover:bg-muted hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2"
                 >
                   <Code className="w-4 h-4" />
                   Primeiro Projeto
-                </Link>
+                </button>
               </div>
             </motion.div>
 
